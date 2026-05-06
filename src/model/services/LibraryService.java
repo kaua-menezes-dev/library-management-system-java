@@ -3,12 +3,6 @@ package model.services;
 import model.entities.Book;
 import model.entities.Loan;
 import model.entities.Member;
-import model.enums.BookStatus;
-import model.enums.MemberStatus;
-import model.exceptions.BookNotAvailableException;
-import model.exceptions.InvalidIsbnException;
-import model.exceptions.LoanLimitExceededException;
-import model.exceptions.MemberSuspendedException;
 
 import java.util.ArrayList;
 import java.util.List;
