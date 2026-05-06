@@ -51,12 +51,6 @@ public class Member {
     }
 
     public boolean isSuspended(){
-
-        if (memberStatus == MemberStatus.ACTIVE) {
-            return true;
-        }
-
-        return false;
-
+        return memberStatus == MemberStatus.ACTIVE;
     }
 }

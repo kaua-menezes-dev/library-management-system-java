@@ -1,6 +1,7 @@
 package model.entities;
 
 import model.enums.BookStatus;
+import model.exceptions.InvalidIsbnException;
 
 public class Book {
 
@@ -12,6 +13,11 @@ public class Book {
     public Book(){}
 
     public Book(String title, String author, String isbn) {
+
+        if(!isbn.matches("\\d{11}")){
+            throw new InvalidIsbnException(isbn);
+        }
+
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -51,12 +57,6 @@ public class Book {
     }
 
     public boolean isAvailable(){
-
-        if (status == BookStatus.AVAILABLE) {
-            return true;
-        }
-
-        return false;
-
+        return status == BookStatus.AVAILABLE;
     }
 }

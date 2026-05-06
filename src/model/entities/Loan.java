@@ -1,7 +1,5 @@
 package model.entities;
 
-import model.enums.MemberStatus;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
