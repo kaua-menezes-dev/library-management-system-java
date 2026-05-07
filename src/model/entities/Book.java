@@ -14,7 +14,7 @@ public class Book {
 
     public Book(String title, String author, String isbn) {
 
-        if(!isbn.matches("\\d{11}")){
+        if(!isbn.matches("\\d{13}")){
             throw new InvalidIsbnException(isbn);
         }
 
