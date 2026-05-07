@@ -10,6 +10,7 @@ import model.exceptions.InvalidIsbnException;
 import model.exceptions.LoanLimitExceededException;
 import model.exceptions.MemberSuspendedException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,102 @@ public class LibraryService {
 
     public void addMember(Member member) {
         members.add(member);
+    }
+
+    public void performLoan(String isbn, String memberId){
+
+        Book book = findBook(isbn);
+        Member member = findMember(memberId);
+
+        validateBook(book);
+        validateMemberStatus(member);
+        validateLoanLimit(member);
+
+        Loan loan = new Loan(book, member);
+
+        book.setStatus(BookStatus.BORROWED);
+        loans.add(loan);
+
+    }
+
+    public Book findBookByIsbn(String isbn) {
+        return findBook(isbn);
+    }
+
+    public Member findMemberById(String memberId) {
+        return findMember(memberId);
+    }
+
+    public Loan findActiveLoanByBook(String isbn) {
+
+        for (Loan l : loans) {
+            if (l.getBook().getIsbn().equals(isbn) && l.isActive()) {
+                return l;
+            }
+        }
+
+        return null;
+
+    }
+
+    public int countActiveLoans(Member member) {
+
+        int count = 0;
+
+        for (Loan l : loans) {
+            if (l.getMember().equals(member) && l.isActive()) {
+                count++;
+            }
+        }
+
+        return count;
+
+    }
+
+    public boolean hasActiveLoan(Book book) {
+
+        for (Loan l : loans) {
+            if (l.getBook().equals(book) && l.isActive()) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public List<Loan> listActiveLoans() {
+
+        List<Loan> activeLoans = new ArrayList<>();
+
+        for (Loan l : loans) {
+            if (l.isActive()) {
+                activeLoans.add(l);
+            }
+        }
+
+        return activeLoans;
+
+    }
+
+    public void returnBook(String isbn) {
+
+        Loan loan = findActiveLoanByBook(isbn);
+
+        if (loan == null) {
+            throw new RuntimeException("Nenhum empréstimo ativo encontrado para este livro");
+        }
+
+        loan.setActualReturnDate(LocalDate.now());
+
+        loan.calculatedFee();
+
+        if (loan.getDelayDays() >= 30) {
+            loan.getMember().setMemberStatus(MemberStatus.SUSPENDED);
+        }
+
+        loan.getBook().setStatus(BookStatus.AVAILABLE);
+
     }
 
 
@@ -83,20 +180,6 @@ public class LibraryService {
         if (activeLoans >= 3) {
             throw new LoanLimitExceededException(member.getMembershipId());
         }
-
-    }
-
-    private int countActiveLoans(Member member) {
-
-        int count = 0;
-
-        for (Loan l : loans) {
-            if (l.getMember().equals(member) && l.isActive()) {
-                count++;
-            }
-        }
-
-        return count;
 
     }
 
